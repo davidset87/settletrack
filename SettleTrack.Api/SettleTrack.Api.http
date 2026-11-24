@@ -1,0 +1,6 @@
+@SettleTrack.Api_HostAddress = http://localhost:5001
+
+GET {{SettleTrack.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

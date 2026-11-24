@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SettleTrack.Api/SettleTrack.Api.csproj" />
+  <Project Path="SettleTrack.Tests/SettleTrack.Tests.csproj" />
+</Solution>
