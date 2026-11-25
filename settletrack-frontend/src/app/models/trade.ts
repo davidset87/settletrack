@@ -28,3 +28,13 @@ export interface TradeSummary {
   dueToday: number;
   overdue: number;
 }
+
+export interface CreateTradeRequest {
+  isin: string;
+  counterparty: string;
+  side: TradeSide;
+  quantity: number;
+  price: number;
+  currency: string;
+  settlementDate: string;
+}

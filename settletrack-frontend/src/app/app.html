@@ -13,6 +13,11 @@
     <p class="error" role="alert">{{ message }}</p>
   }
 
+  <details class="new-trade">
+    <summary>New trade</summary>
+    <app-trade-form [busy]="creating()" (submitted)="createTrade($event)" />
+  </details>
+
   <section class="filters">
     <label>
       Status

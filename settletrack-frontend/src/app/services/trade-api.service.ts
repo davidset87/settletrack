@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Trade, TradeStatus, TradeSummary } from '../models/trade';
+import { CreateTradeRequest, Trade, TradeStatus, TradeSummary } from '../models/trade';
 
 @Injectable({ providedIn: 'root' })
 export class TradeApiService {
@@ -22,6 +22,10 @@ export class TradeApiService {
 
   getSummary(): Observable<TradeSummary> {
     return this.http.get<TradeSummary>(`${this.baseUrl}/summary`);
+  }
+
+  createTrade(request: CreateTradeRequest): Observable<Trade> {
+    return this.http.post<Trade>(this.baseUrl, request);
   }
 
   updateStatus(id: number, status: TradeStatus): Observable<Trade> {

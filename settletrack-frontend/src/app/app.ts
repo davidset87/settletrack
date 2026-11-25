@@ -1,23 +1,32 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, viewChild } from '@angular/core';
 import { SummaryCards } from './components/summary-cards';
+import { TradeForm } from './components/trade-form';
 import { StatusChange, TradeTable } from './components/trade-table';
-import { TRADE_STATUSES, Trade, TradeStatus, TradeSummary } from './models/trade';
+import {
+  CreateTradeRequest,
+  TRADE_STATUSES,
+  Trade,
+  TradeStatus,
+  TradeSummary,
+} from './models/trade';
 import { TradeApiService } from './services/trade-api.service';
 
 @Component({
   selector: 'app-root',
-  imports: [SummaryCards, TradeTable],
+  imports: [SummaryCards, TradeTable, TradeForm],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App implements OnInit {
   private readonly api = inject(TradeApiService);
+  private readonly tradeForm = viewChild(TradeForm);
 
   protected readonly statuses = TRADE_STATUSES;
   protected readonly trades = signal<Trade[]>([]);
   protected readonly summary = signal<TradeSummary | null>(null);
   protected readonly loading = signal(false);
+  protected readonly creating = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly busyId = signal<number | null>(null);
   protected readonly statusFilter = signal<TradeStatus | ''>('');
@@ -40,6 +49,23 @@ export class App implements OnInit {
   protected setIsinFilter(value: string): void {
     this.isinFilter.set(value);
     this.loadTrades();
+  }
+
+  protected createTrade(request: CreateTradeRequest): void {
+    this.creating.set(true);
+    this.error.set(null);
+
+    this.api.createTrade(request).subscribe({
+      next: () => {
+        this.creating.set(false);
+        this.tradeForm()?.reset();
+        this.refresh();
+      },
+      error: (err: unknown) => {
+        this.creating.set(false);
+        this.error.set(this.describe(err));
+      },
+    });
   }
 
   protected changeStatus(change: StatusChange): void {
@@ -85,6 +111,10 @@ export class App implements OnInit {
     if (err instanceof HttpErrorResponse) {
       if (err.status === 0) {
         return 'Cannot reach the API. Is it running?';
+      }
+      const validationErrors = err.error?.errors as Record<string, string[]> | undefined;
+      if (validationErrors) {
+        return Object.values(validationErrors).flat().join(' ');
       }
       return err.error?.detail ?? err.error?.title ?? `Request failed (${err.status}).`;
     }
