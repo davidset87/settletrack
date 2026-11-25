@@ -4,17 +4,17 @@ using SettleTrack.Api.Models;
 namespace SettleTrack.Api.Dtos;
 
 public record CreateTradeRequest(
-    [property: Required, RegularExpression("^[A-Z]{2}[A-Z0-9]{9}[0-9]$",
+    [Required, RegularExpression("^[A-Z]{2}[A-Z0-9]{9}[0-9]$",
         ErrorMessage = "ISIN must be 12 characters (for example US0378331005).")]
     string Isin,
-    [property: Required, StringLength(100, MinimumLength = 2)]
+    [Required, StringLength(100, MinimumLength = 2)]
     string Counterparty,
     TradeSide Side,
-    [property: Range(1, 1_000_000_000)]
+    [Range(1, 1_000_000_000)]
     long Quantity,
-    [property: Range(0.0001, 1_000_000)]
+    [Range(0.0001, 1_000_000)]
     decimal Price,
-    [property: Required, RegularExpression("^[A-Z]{3}$",
+    [Required, RegularExpression("^[A-Z]{3}$",
         ErrorMessage = "Currency must be a 3-letter code (for example EUR).")]
     string Currency,
     DateOnly SettlementDate);
